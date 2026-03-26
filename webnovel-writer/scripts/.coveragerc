@@ -5,7 +5,7 @@
 source = data_modules
 omit =
     */tests/*
+    */data_modules/webnovel.py
 
 [report]
 show_missing = True
-

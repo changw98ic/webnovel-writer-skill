@@ -1,0 +1,44 @@
+{
+  "name": "@webnovel-skill/adapters",
+  "version": "1.0.0",
+  "description": "平台适配器 - Claude Code / OpenAI / Cursor / OpenClaw",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./claude-code": {
+      "import": "./dist/claude-code/index.js",
+      "types": "./dist/claude-code/index.d.ts"
+    },
+    "./openai": {
+      "import": "./dist/openai/index.js",
+      "types": "./dist/openai/index.d.ts"
+    },
+    "./cursor": {
+      "import": "./dist/cursor/index.js",
+      "types": "./dist/cursor/index.d.ts"
+    },
+    "./openclaw": {
+      "import": "./dist/openclaw/index.js",
+      "types": "./dist/openclaw/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run packages/adapters"
+  },
+  "dependencies": {
+    "@webnovel-skill/core": "workspace:*",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}

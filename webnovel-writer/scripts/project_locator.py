@@ -253,6 +253,16 @@ def _is_project_root(path: Path) -> bool:
     return (path / ".webnovel" / "state.json").is_file()
 
 
+def _is_explicit_project_root(path: Path) -> bool:
+    """
+    接受“显式传入”的 project_root。
+
+    与自动发现不同，显式路径允许处于“已初始化目录结构，但 state.json 尚未落盘”的阶段，
+    例如测试夹具或初始化前/迁移前命令。
+    """
+    return _is_project_root(path) or (path / ".webnovel").is_dir()
+
+
 def _pointer_candidates(cwd: Path, *, stop_at: Optional[Path] = None) -> Iterable[Path]:
     """Yield candidate pointer files from cwd up to parents (bounded by stop_at when provided)."""
     for candidate in (cwd, *cwd.parents):
@@ -348,7 +358,7 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
     """
     if explicit_project_root:
         root = normalize_windows_path(explicit_project_root).expanduser().resolve()
-        if _is_project_root(root):
+        if _is_explicit_project_root(root):
             return root
 
         # 兼容：显式传入“工作区根目录”（含 `.claude/.webnovel-current-project` 指针）
@@ -426,4 +436,3 @@ def resolve_state_file(
 
     root = resolve_project_root(explicit_project_root, cwd=base)
     return root / ".webnovel" / "state.json"
-
