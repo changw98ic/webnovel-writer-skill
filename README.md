@@ -189,4 +189,4 @@ pnpm cli --help
 
 ## 致谢
 
-本项目基于 [lingfengQAQ/webnovel-writer-skill](https://github.com/lingfengQAQ/webnovel-writer-skill) 演进而来，当前仓库已补充 npm 包发布、CLI、Dashboard 与多平台适配链路。
+本项目基于 [lingfengQAQ/webnovel-writer](https://github.com/lingfengQAQ/webnovel-writer) 演进而来，当前仓库已补充 npm 包发布、CLI、Dashboard 与多平台适配链路。
