@@ -2,7 +2,7 @@
  * Chapter Routes - 章节管理 API
  */
 import type { FastifyPluginAsync, FastifyReply } from 'fastify';
-import { StateManager, IndexManager } from '@webnovel-skill/data';
+import { StateManager, IndexManager } from '@changw98ic/data';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 

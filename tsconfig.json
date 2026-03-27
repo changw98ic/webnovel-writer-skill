@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@webnovel-skill/core": ["./packages/core/src"],
-      "@webnovel-skill/data": ["./packages/data/src"],
-      "@webnovel-skill/adapters": ["./packages/adapters/src"]
+      "@changw98ic/core": ["./packages/core/src"],
+      "@changw98ic/data": ["./packages/data/src"],
+      "@changw98ic/adapters": ["./packages/adapters/src"]
     }
   },
   "references": ["./packages/**/tsconfig.json"]

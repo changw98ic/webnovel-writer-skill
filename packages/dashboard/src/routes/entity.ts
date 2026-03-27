@@ -2,7 +2,7 @@
  * Entity Routes - 实体管理 API
  */
 import type { FastifyPluginAsync } from 'fastify';
-import { IndexManager } from '@webnovel-skill/data';
+import { IndexManager } from '@changw98ic/data';
 
 interface EntityRoutesOptions {
   projectRoot: string;

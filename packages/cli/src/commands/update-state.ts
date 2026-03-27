@@ -3,7 +3,7 @@
  */
 import { Command } from 'commander';
 import { resolveProjectRoot } from '../utils/project-locator.js';
-import { StateManager } from '@webnovel-skill/data';
+import { StateManager } from '@changw98ic/data';
 import { readFileSync } from 'fs';
 
 export const updateStateCommand = new Command('update-state')
@@ -22,7 +22,7 @@ export const updateStateCommand = new Command('update-state')
       console.log(`   项目路径: ${projectRoot}`);
 
       const manager = new StateManager({ projectRoot });
-      const state = manager.getState();
+      const state = await manager.loadState();
 
       const updates: Record<string, unknown> = {};
 
@@ -85,8 +85,12 @@ export const updateStateCommand = new Command('update-state')
         process.exit(0);
       }
 
-      // Apply updates
-      manager.updateState(updates);
+      // Apply updates using updateState with updater function
+      await manager.updateState((currentState) => ({
+        ...currentState,
+        ...updates,
+        progress: updates.progress ? { ...currentState.progress, ...(updates.progress as object) } : currentState.progress,
+      }));
 
       console.log('\n✅ 状态已更新');
     } catch (error) {

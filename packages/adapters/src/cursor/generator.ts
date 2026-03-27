@@ -3,7 +3,7 @@
  *
  * 将统一 Skill 定义转换为 Cursor 的 .cursorrules 格式
  */
-import { Skill } from '@webnovel-skill/core';
+import { Skill } from '@changw98ic/core';
 
 export interface CursorOutput {
   path: string;

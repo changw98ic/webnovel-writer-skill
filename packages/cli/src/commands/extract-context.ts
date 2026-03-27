@@ -1,9 +1,12 @@
 /**
  * Extract-context command - 提取章节上下文
+ *
+ * 注意：ContextExtractor 尚未在 @changw98ic/data 中实现
+ * 当前使用 StateManager 和 IndexManager 提供简化实现
  */
 import { Command } from 'commander';
 import { resolveProjectRoot } from '../utils/project-locator.js';
-import { ContextExtractor } from '@webnovel-skill/data';
+import { StateManager, IndexManager } from '@changw98ic/data';
 import { writeFileSync } from 'fs';
 
 export const extractContextCommand = new Command('extract-context')
@@ -27,15 +30,33 @@ export const extractContextCommand = new Command('extract-context')
       console.log(`📖 提取第 ${chapter} 章上下文...`);
       console.log(`   项目路径: ${projectRoot}`);
 
-      const extractor = new ContextExtractor({ projectRoot });
+      // 使用 StateManager 和 IndexManager 构建上下文
+      const stateManager = new StateManager({ projectRoot });
+      const indexManager = new IndexManager({ projectRoot });
 
-      const extractOptions = {
-        includeEntities: options.includeEntities ?? false,
-        includeForeshadowing: options.includeForeshadowing ?? false,
-        maxChars: options.maxChars,
+      const state = await stateManager.loadState();
+      const coreEntities = options.includeEntities
+        ? indexManager.getCoreEntities()
+        : [];
+      const recentAppearances = indexManager.getRecentAppearances(10);
+
+      indexManager.close();
+
+      const context: Record<string, unknown> = {
+        chapter,
+        progress: state.progress,
+        characters: coreEntities.map(e => ({
+          id: e.id,
+          name: e.canonical_name,
+          type: e.type,
+          tier: e.tier,
+        })),
+        recentEntities: recentAppearances,
       };
 
-      const context = await extractor.buildContext(chapter, extractOptions);
+      if (options.includeForeshadowing) {
+        context.activeForeshadowing = state.plot_threads?.foreshadowing ?? [];
+      }
 
       let output: string;
       switch (options.format) {
@@ -47,6 +68,11 @@ export const extractContextCommand = new Command('extract-context')
           break;
         default:
           output = formatAsText(context);
+      }
+
+      // 如果有 maxChars 限制，截断输出
+      if (options.maxChars && output.length > options.maxChars) {
+        output = output.slice(0, options.maxChars) + '\n... (已截断)';
       }
 
       if (options.output) {
@@ -71,28 +97,23 @@ function formatAsText(context: Record<string, unknown>): string {
   }
 
   if (context.characters && Array.isArray(context.characters) && context.characters.length > 0) {
-    lines.push('\n[登场角色]');
+    lines.push('\n[核心实体]');
     for (const char of context.characters as Array<Record<string, unknown>>) {
-      lines.push(`- ${char.name}${char.role ? ` (${char.role})` : ''}`);
+      lines.push(`- [${char.type}] ${char.name} (${char.tier})`);
     }
   }
 
-  if (context.locations && Array.isArray(context.locations) && context.locations.length > 0) {
-    lines.push('\n[场景地点]');
-    for (const loc of context.locations as string[]) {
-      lines.push(`- ${loc}`);
+  if (context.recentEntities && Array.isArray(context.recentEntities) && context.recentEntities.length > 0) {
+    lines.push('\n[最近出场]');
+    for (const entity of context.recentEntities as Array<{ entity_id: string; last_appearance: number }>) {
+      lines.push(`- ${entity.entity_id} (第 ${entity.last_appearance} 章)`);
     }
-  }
-
-  if (context.previousEvents) {
-    lines.push('\n[前情提要]');
-    lines.push(String(context.previousEvents));
   }
 
   if (context.activeForeshadowing && Array.isArray(context.activeForeshadowing) && context.activeForeshadowing.length > 0) {
     lines.push('\n[活跃伏笔]');
     for (const fs of context.activeForeshadowing as Array<Record<string, unknown>>) {
-      lines.push(`- ${fs.name}: ${fs.description}`);
+      lines.push(`- ${fs.name || fs.id}: ${fs.description || ''}`);
     }
   }
 
@@ -109,31 +130,25 @@ function formatAsMarkdown(context: Record<string, unknown>): string {
   }
 
   if (context.characters && Array.isArray(context.characters) && context.characters.length > 0) {
-    lines.push('## 登场角色\n');
+    lines.push('## 核心实体\n');
     for (const char of context.characters as Array<Record<string, unknown>>) {
-      lines.push(`- **${char.name}**${char.role ? ` (${char.role})` : ''}`);
+      lines.push(`- **${char.name}** [${char.type}] (${char.tier})`);
     }
     lines.push('');
   }
 
-  if (context.locations && Array.isArray(context.locations) && context.locations.length > 0) {
-    lines.push('## 场景地点\n');
-    for (const loc of context.locations as string[]) {
-      lines.push(`- ${loc}`);
+  if (context.recentEntities && Array.isArray(context.recentEntities) && context.recentEntities.length > 0) {
+    lines.push('## 最近出场\n');
+    for (const entity of context.recentEntities as Array<{ entity_id: string; last_appearance: number }>) {
+      lines.push(`- ${entity.entity_id} (第 ${entity.last_appearance} 章)`);
     }
-    lines.push('');
-  }
-
-  if (context.previousEvents) {
-    lines.push('## 前情提要\n');
-    lines.push(String(context.previousEvents));
     lines.push('');
   }
 
   if (context.activeForeshadowing && Array.isArray(context.activeForeshadowing) && context.activeForeshadowing.length > 0) {
     lines.push('## 活跃伏笔\n');
     for (const fs of context.activeForeshadowing as Array<Record<string, unknown>>) {
-      lines.push(`- **${fs.name}**: ${fs.description}`);
+      lines.push(`- **${fs.name || fs.id}**: ${fs.description || ''}`);
     }
     lines.push('');
   }

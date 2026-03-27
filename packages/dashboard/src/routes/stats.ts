@@ -2,7 +2,7 @@
  * Stats Routes - 统计信息 API
  */
 import type { FastifyPluginAsync, FastifyReply } from 'fastify';
-import { StateManager, IndexManager, RAGAdapter } from '@webnovel-skill/data';
+import { StateManager, IndexManager, RAGAdapter } from '@changw98ic/data';
 
 interface StatsRoutesOptions {
   projectRoot: string;

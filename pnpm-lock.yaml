@@ -32,7 +32,7 @@ importers:
 
   packages/adapters:
     dependencies:
-      '@webnovel-skill/core':
+      '@changw98ic/core':
         specifier: workspace:*
         version: link:../core
       zod:
@@ -48,16 +48,16 @@ importers:
 
   packages/cli:
     dependencies:
-      '@webnovel-skill/adapters':
+      '@changw98ic/adapters':
         specifier: workspace:*
         version: link:../adapters
-      '@webnovel-skill/core':
+      '@changw98ic/core':
         specifier: workspace:*
         version: link:../core
-      '@webnovel-skill/dashboard':
+      '@changw98ic/dashboard':
         specifier: workspace:*
         version: link:../dashboard
-      '@webnovel-skill/data':
+      '@changw98ic/data':
         specifier: workspace:*
         version: link:../data
       chalk:
@@ -101,18 +101,18 @@ importers:
 
   packages/dashboard:
     dependencies:
+      '@changw98ic/core':
+        specifier: workspace:*
+        version: link:../core
+      '@changw98ic/data':
+        specifier: workspace:*
+        version: link:../data
       '@fastify/cors':
         specifier: ^9.0.1
         version: 9.0.1
       '@fastify/static':
         specifier: ^7.0.4
         version: 7.0.4
-      '@webnovel-skill/core':
-        specifier: workspace:*
-        version: link:../core
-      '@webnovel-skill/data':
-        specifier: workspace:*
-        version: link:../data
       fastify:
         specifier: ^4.29.1
         version: 4.29.1
@@ -129,12 +129,9 @@ importers:
 
   packages/data:
     dependencies:
-      '@webnovel-skill/core':
+      '@changw98ic/core':
         specifier: workspace:*
         version: link:../core
-      better-sqlite3:
-        specifier: ^11.0.0
-        version: 11.10.0
       proper-lockfile:
         specifier: ^4.1.0
         version: 4.1.2
@@ -144,6 +141,10 @@ importers:
       zod:
         specifier: ^3.23.0
         version: 3.25.76
+    optionalDependencies:
+      better-sqlite3:
+        specifier: ^11.0.0
+        version: 11.10.0
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.0
@@ -2510,22 +2511,26 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
-  base64-js@1.5.1: {}
+  base64-js@1.5.1:
+    optional: true
 
   better-sqlite3@11.10.0:
     dependencies:
       bindings: 1.5.0
       prebuild-install: 7.1.3
+    optional: true
 
   bindings@1.5.0:
     dependencies:
       file-uri-to-path: 1.0.0
+    optional: true
 
   bl@4.1.0:
     dependencies:
       buffer: 5.7.1
       inherits: 2.0.4
       readable-stream: 3.6.2
+    optional: true
 
   brace-expansion@1.1.12:
     dependencies:
@@ -2544,6 +2549,7 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
+    optional: true
 
   cac@6.7.14: {}
 
@@ -2570,7 +2576,8 @@ snapshots:
     dependencies:
       get-func-name: 2.0.2
 
-  chownr@1.1.4: {}
+  chownr@1.1.4:
+    optional: true
 
   cli-cursor@5.0.0:
     dependencies:
@@ -2626,18 +2633,21 @@ snapshots:
   decompress-response@6.0.0:
     dependencies:
       mimic-response: 3.1.0
+    optional: true
 
   deep-eql@4.1.4:
     dependencies:
       type-detect: 4.1.0
 
-  deep-extend@0.6.0: {}
+  deep-extend@0.6.0:
+    optional: true
 
   deep-is@0.1.4: {}
 
   depd@2.0.0: {}
 
-  detect-libc@2.1.2: {}
+  detect-libc@2.1.2:
+    optional: true
 
   diff-sequences@29.6.3: {}
 
@@ -2664,6 +2674,7 @@ snapshots:
   end-of-stream@1.4.5:
     dependencies:
       once: 1.4.0
+    optional: true
 
   enquirer@2.4.1:
     dependencies:
@@ -2815,7 +2826,8 @@ snapshots:
       signal-exit: 4.1.0
       strip-final-newline: 3.0.0
 
-  expand-template@2.0.3: {}
+  expand-template@2.0.3:
+    optional: true
 
   fast-content-type-parse@1.1.0: {}
 
@@ -2882,7 +2894,8 @@ snapshots:
     dependencies:
       flat-cache: 3.2.0
 
-  file-uri-to-path@1.0.0: {}
+  file-uri-to-path@1.0.0:
+    optional: true
 
   fill-range@7.1.1:
     dependencies:
@@ -2918,7 +2931,8 @@ snapshots:
 
   forwarded@0.2.0: {}
 
-  fs-constants@1.0.0: {}
+  fs-constants@1.0.0:
+    optional: true
 
   fs.realpath@1.0.0: {}
 
@@ -2935,7 +2949,8 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  github-from-package@0.0.0: {}
+  github-from-package@0.0.0:
+    optional: true
 
   glob-parent@5.1.2:
     dependencies:
@@ -2992,7 +3007,8 @@ snapshots:
 
   human-signals@5.0.0: {}
 
-  ieee754@1.2.1: {}
+  ieee754@1.2.1:
+    optional: true
 
   ignore@5.3.2: {}
 
@@ -3010,7 +3026,8 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  ini@1.3.8: {}
+  ini@1.3.8:
+    optional: true
 
   ipaddr.js@1.9.1: {}
 
@@ -3129,7 +3146,8 @@ snapshots:
 
   mimic-function@5.0.1: {}
 
-  mimic-response@3.1.0: {}
+  mimic-response@3.1.0:
+    optional: true
 
   minimatch@3.1.5:
     dependencies:
@@ -3139,11 +3157,13 @@ snapshots:
     dependencies:
       brace-expansion: 2.0.2
 
-  minimist@1.2.8: {}
+  minimist@1.2.8:
+    optional: true
 
   minipass@7.1.3: {}
 
-  mkdirp-classic@0.5.3: {}
+  mkdirp-classic@0.5.3:
+    optional: true
 
   mlly@1.8.2:
     dependencies:
@@ -3160,13 +3180,15 @@ snapshots:
 
   nanoid@3.3.11: {}
 
-  napi-build-utils@2.0.0: {}
+  napi-build-utils@2.0.0:
+    optional: true
 
   natural-compare@1.4.0: {}
 
   node-abi@3.89.0:
     dependencies:
       semver: 7.7.4
+    optional: true
 
   npm-run-path@5.3.0:
     dependencies:
@@ -3318,6 +3340,7 @@ snapshots:
       simple-get: 4.0.1
       tar-fs: 2.1.4
       tunnel-agent: 0.6.0
+    optional: true
 
   prelude-ls@1.2.1: {}
 
@@ -3346,6 +3369,7 @@ snapshots:
     dependencies:
       end-of-stream: 1.4.5
       once: 1.4.0
+    optional: true
 
   punycode@2.3.1: {}
 
@@ -3359,6 +3383,7 @@ snapshots:
       ini: 1.3.8
       minimist: 1.2.8
       strip-json-comments: 2.0.1
+    optional: true
 
   react-is@18.3.1: {}
 
@@ -3367,6 +3392,7 @@ snapshots:
       inherits: 2.0.4
       string_decoder: 1.3.0
       util-deprecate: 1.0.2
+    optional: true
 
   real-require@0.2.0: {}
 
@@ -3456,13 +3482,15 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-concat@1.0.1: {}
+  simple-concat@1.0.1:
+    optional: true
 
   simple-get@4.0.1:
     dependencies:
       decompress-response: 6.0.0
       once: 1.4.0
       simple-concat: 1.0.1
+    optional: true
 
   slash@3.0.0: {}
 
@@ -3503,6 +3531,7 @@ snapshots:
   string_decoder@1.3.0:
     dependencies:
       safe-buffer: 5.2.1
+    optional: true
 
   strip-ansi@6.0.1:
     dependencies:
@@ -3514,7 +3543,8 @@ snapshots:
 
   strip-final-newline@3.0.0: {}
 
-  strip-json-comments@2.0.1: {}
+  strip-json-comments@2.0.1:
+    optional: true
 
   strip-json-comments@3.1.1: {}
 
@@ -3532,6 +3562,7 @@ snapshots:
       mkdirp-classic: 0.5.3
       pump: 3.0.4
       tar-stream: 2.2.0
+    optional: true
 
   tar-stream@2.2.0:
     dependencies:
@@ -3540,6 +3571,7 @@ snapshots:
       fs-constants: 1.0.0
       inherits: 2.0.4
       readable-stream: 3.6.2
+    optional: true
 
   text-table@0.2.0: {}
 
@@ -3575,6 +3607,7 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
+    optional: true
 
   type-check@0.4.0:
     dependencies:
@@ -3596,7 +3629,8 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  util-deprecate@1.0.2: {}
+  util-deprecate@1.0.2:
+    optional: true
 
   vite-node@1.6.1(@types/node@20.19.37):
     dependencies:

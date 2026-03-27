@@ -1,5 +1,5 @@
 /**
- * @webnovel-skill/adapters
+ * @changw98ic/adapters
  *
  * 平台适配器统一入口
  */
@@ -9,7 +9,7 @@ import { generateCursorRules } from './cursor/generator.js';
 import { generateOpenAIFunctions } from './openai/generator.js';
 import { generateOpenClawSkill } from './openclaw/generator.js';
 
-import { Skill } from '@webnovel-skill/core';
+import { Skill } from '@changw98ic/core';
 
 export type Platform = 'claude-code' | 'cursor' | 'openai' | 'openclaw';
 

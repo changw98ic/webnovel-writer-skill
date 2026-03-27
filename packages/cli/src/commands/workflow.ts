@@ -3,7 +3,7 @@
  */
 import { Command } from 'commander';
 import { resolveProjectRoot } from '../utils/project-locator.js';
-import { StateManager, IndexManager } from '@webnovel-skill/data';
+import { StateManager, IndexManager } from '@changw98ic/data';
 import { existsSync, statSync } from 'fs';
 import { join } from 'path';
 
@@ -38,7 +38,7 @@ workflowCommand
       if (existsSync(statePath)) {
         try {
           const stateManager = new StateManager({ projectRoot });
-          const state = stateManager.getState();
+          const state = await stateManager.loadState();
           checks.push({ name: '状态文件', status: '✅', detail: `第 ${state.progress?.current_chapter ?? 0} 章` });
         } catch (e) {
           checks.push({ name: '状态文件', status: '⚠️', detail: `解析失败: ${e instanceof Error ? e.message : e}` });
@@ -131,7 +131,7 @@ workflowCommand
       const indexManager = new IndexManager({ projectRoot });
 
       // Validate state consistency
-      const state = stateManager.getState();
+      const state = await stateManager.loadState();
       const indexStats = indexManager.getStats();
 
       const issues: string[] = [];
@@ -144,7 +144,6 @@ workflowCommand
 
       // Check foreshadowing threads
       const foreshadowing = state.plot_threads?.foreshadowing ?? [];
-      const resolvedThreads = state.plot_threads?.resolved ?? [];
       if (foreshadowing.length > 10) {
         issues.push(`活跃伏笔过多 (${foreshadowing.length} 个)，建议处理部分`);
       }

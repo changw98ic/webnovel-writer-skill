@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, closeSync, openSync } from 'fs';
 import { join } from 'path';
 import lockfile from 'proper-lockfile';
-import { ProjectState, ProjectStateSchema } from '@webnovel-skill/core';
+import { ProjectState, ProjectStateSchema } from '@changw98ic/core';
 
 export interface StateManagerOptions {
   projectRoot: string;

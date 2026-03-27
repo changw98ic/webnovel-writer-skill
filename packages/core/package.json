@@ -1,7 +1,7 @@
 {
-  "name": "@webnovel-skill/core",
+  "name": "@changw98ic/core",
   "version": "1.0.0",
-  "description": "核心类型和 Skill 定义",
+  "description": "核心类型和 Skill 定义 - 通用网文创作框架",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,11 +15,41 @@
       "types": "./dist/types/index.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch",
     "clean": "rm -rf dist",
-    "test": "vitest run packages/core"
+    "test": "vitest run packages/core",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "webnovel",
+    "writing",
+    "ai",
+    "claude",
+    "openai",
+    "cursor",
+    "llm",
+    "skill"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/changw98ic/webnovel-writer-skill.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/changw98ic/webnovel-writer-skill/issues"
+  },
+  "homepage": "https://github.com/changw98ic/webnovel-writer-skill#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "zod": "^3.23.0"

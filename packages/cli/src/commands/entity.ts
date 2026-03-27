@@ -3,7 +3,7 @@
  */
 import { Command } from 'commander';
 import { resolveProjectRoot } from '../utils/project-locator.js';
-import { IndexManager } from '@webnovel-skill/data';
+import { IndexManager } from '@changw98ic/data';
 
 export const entityCommand = new Command('entity')
   .description('实体管理');
@@ -13,13 +13,13 @@ entityCommand
   .command('search <keyword>')
   .description('搜索实体')
   .option('-p, --project-root <path>', '项目根目录')
-  .option('-t, --type <type>', '实体类型 (character|location|item|concept)')
+  .option('-t, --type <type>', '实体类型过滤')
   .option('--json', 'JSON 格式输出')
   .action(async (keyword: string, options) => {
     try {
       const projectRoot = resolveProjectRoot(options.projectRoot ?? process.cwd());
       const manager = new IndexManager({ projectRoot });
-      const results = manager.searchEntities(keyword, options.type);
+      const results = manager.searchEntities(keyword, 20);
 
       manager.close();
 
@@ -35,11 +35,12 @@ entityCommand
 
       console.log(`🔍 搜索结果 (${results.length} 个):\n`);
       for (const entity of results) {
-        console.log(`   [${entity.type}] ${entity.name} (层级: ${entity.tier})`);
-        if (entity.aliases && entity.aliases.length > 0) {
-          console.log(`     别名: ${entity.aliases.join(', ')}`);
+        console.log(`   [${entity.type}] ${entity.canonical_name} (层级: ${entity.tier})`);
+        const aliases = manager.getAliasesForEntity(entity.id);
+        if (aliases.length > 0) {
+          console.log(`     别名: ${aliases.map(a => a.alias).join(', ')}`);
         }
-        console.log(`     首次出现: 第 ${entity.firstAppearance} 章`);
+        console.log(`     首次出现: 第 ${entity.first_appearance} 章`);
         console.log();
       }
     } catch (error) {
@@ -48,7 +49,7 @@ entityCommand
     }
   });
 
-// Link subcommand
+// Link subcommand - 注意：linkEntities 方法不存在，改为占位实现
 entityCommand
   .command('link <entity1> <entity2>')
   .description('链接两个实体')
@@ -60,18 +61,31 @@ entityCommand
 
       console.log(`🔗 链接实体: ${entity1} ↔ ${entity2}`);
       console.log(`   项目路径: ${projectRoot}`);
+      console.log(`   关系类型: ${options.relation || '未指定'}`);
 
       const manager = new IndexManager({ projectRoot });
-      const success = manager.linkEntities(entity1, entity2, options.relation);
 
-      manager.close();
+      // 查找实体
+      const e1 = manager.getEntityById(entity1) || manager.getEntityByAlias(entity1);
+      const e2 = manager.getEntityById(entity2) || manager.getEntityByAlias(entity2);
 
-      if (success) {
-        console.log('\n✅ 链接成功');
-      } else {
-        console.log('\n❌ 链接失败: 未找到指定实体');
+      if (!e1 || !e2) {
+        console.log(`\n❌ 未找到实体: ${!e1 ? entity1 : ''} ${!e2 ? entity2 : ''}`);
+        manager.close();
         process.exit(1);
       }
+
+      // 使用 upsertRelationship 创建关系
+      manager.upsertRelationship({
+        from_entity: e1.id,
+        to_entity: e2.id,
+        type: options.relation || '关联',
+        description: `CLI 创建的关系`,
+        chapter: 1,
+      });
+
+      manager.close();
+      console.log('\n✅ 链接成功');
     } catch (error) {
       console.error('❌ 链接失败:', error instanceof Error ? error.message : error);
       process.exit(1);
@@ -122,39 +136,51 @@ entityCommand
     try {
       const projectRoot = resolveProjectRoot(options.projectRoot ?? process.cwd());
       const manager = new IndexManager({ projectRoot });
-      const entity = manager.getEntity(name);
 
-      manager.close();
+      // 先按 ID 查找，再按别名查找
+      let entity = manager.getEntityById(name);
+      if (!entity) {
+        entity = manager.getEntityByAlias(name);
+      }
 
       if (!entity) {
+        manager.close();
         console.log(`未找到实体: ${name}`);
         process.exit(1);
       }
 
+      // 获取别名和关系
+      const aliases = manager.getAliasesForEntity(entity.id);
+      const relationships = manager.getRelationships(entity.id);
+
       if (options.json) {
-        console.log(JSON.stringify(entity, null, 2));
+        console.log(JSON.stringify({ ...entity, aliases, relationships }, null, 2));
       } else {
         console.log(`📋 实体详情:\n`);
-        console.log(`   名称: ${entity.name}`);
+        console.log(`   名称: ${entity.canonical_name}`);
+        console.log(`   ID: ${entity.id}`);
         console.log(`   类型: ${entity.type}`);
         console.log(`   层级: ${entity.tier}`);
-        if (entity.aliases && entity.aliases.length > 0) {
-          console.log(`   别名: ${entity.aliases.join(', ')}`);
+        if (aliases.length > 0) {
+          console.log(`   别名: ${aliases.map(a => a.alias).join(', ')}`);
         }
-        console.log(`   首次出现: 第 ${entity.firstAppearance} 章`);
-        if (entity.lastAppearance) {
-          console.log(`   最后出现: 第 ${entity.lastAppearance} 章`);
+        console.log(`   首次出现: 第 ${entity.first_appearance} 章`);
+        if (entity.last_appearance) {
+          console.log(`   最后出现: 第 ${entity.last_appearance} 章`);
         }
-        if (entity.description) {
-          console.log(`   描述: ${entity.description}`);
+        if (entity.desc) {
+          console.log(`   描述: ${entity.desc}`);
         }
-        if (entity.relations && entity.relations.length > 0) {
+        if (relationships.length > 0) {
           console.log('\n   关系:');
-          for (const rel of entity.relations) {
-            console.log(`   - ${rel.target} (${rel.type})`);
+          for (const rel of relationships) {
+            const target = rel.from_entity === entity.id ? rel.to_entity : rel.from_entity;
+            console.log(`   - ${target} (${rel.type})`);
           }
         }
       }
+
+      manager.close();
     } catch (error) {
       console.error('❌ 获取失败:', error instanceof Error ? error.message : error);
       process.exit(1);

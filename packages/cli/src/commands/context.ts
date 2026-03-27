@@ -1,9 +1,12 @@
 /**
  * Context command - 上下文管理
+ *
+ * 注意：ContextExtractor 尚未在 @changw98ic/data 中实现
+ * 当前为占位实现
  */
 import { Command } from 'commander';
 import { resolveProjectRoot } from '../utils/project-locator.js';
-import { ContextExtractor } from '@webnovel-skill/data';
+import { StateManager, IndexManager } from '@changw98ic/data';
 
 export const contextCommand = new Command('context')
   .description('上下文管理');
@@ -28,8 +31,26 @@ contextCommand
       console.log(`🔨 构建第 ${chapter} 章上下文...`);
       console.log(`   项目路径: ${projectRoot}`);
 
-      const extractor = new ContextExtractor({ projectRoot });
-      const context = await extractor.buildContext(chapter);
+      // 使用现有的 StateManager 和 IndexManager 构建简化上下文
+      const stateManager = new StateManager({ projectRoot });
+      const indexManager = new IndexManager({ projectRoot });
+
+      const state = await stateManager.loadState();
+      const entities = indexManager.getCoreEntities();
+
+      const context = {
+        chapter,
+        progress: state.progress,
+        coreEntities: entities.map(e => ({
+          id: e.id,
+          name: e.canonical_name,
+          type: e.type,
+          tier: e.tier,
+        })),
+        activeForeshadowing: state.plot_threads?.foreshadowing ?? [],
+      };
+
+      indexManager.close();
 
       let output: string;
       switch (options.format) {
@@ -65,17 +86,28 @@ contextCommand
   .action(async (options) => {
     try {
       const projectRoot = resolveProjectRoot(options.projectRoot ?? process.cwd());
-      const extractor = new ContextExtractor({ projectRoot });
-      const stats = extractor.getStats();
+      const stateManager = new StateManager({ projectRoot });
+      const indexManager = new IndexManager({ projectRoot });
+
+      const state = await stateManager.loadState();
+      const entityStats = indexManager.getStats();
+
+      const stats = {
+        currentChapter: state.progress?.current_chapter ?? 1,
+        totalEntities: entityStats.totalEntities,
+        entityByType: entityStats.byType,
+        foreshadowingCount: state.plot_threads?.foreshadowing?.length ?? 0,
+      };
+
+      indexManager.close();
 
       if (options.json) {
         console.log(JSON.stringify(stats, null, 2));
       } else {
         console.log('📊 上下文统计:\n');
         console.log(`   当前章节: ${stats.currentChapter}`);
-        console.log(`   已构建上下文: ${stats.builtContexts} 个`);
-        console.log(`   缓存大小: ${stats.cacheSize}`);
-        console.log(`   平均构建时间: ${stats.avgBuildTime}ms`);
+        console.log(`   实体总数: ${stats.totalEntities}`);
+        console.log(`   活跃伏笔: ${stats.foreshadowingCount}`);
       }
     } catch (error) {
       console.error('❌ 获取统计失败:', error instanceof Error ? error.message : error);
@@ -100,8 +132,25 @@ contextCommand
         process.exit(1);
       }
 
-      const extractor = new ContextExtractor({ projectRoot });
-      const context = await extractor.buildContext(chapter);
+      const stateManager = new StateManager({ projectRoot });
+      const indexManager = new IndexManager({ projectRoot });
+
+      const state = await stateManager.loadState();
+      const entities = indexManager.getCoreEntities();
+
+      const context = {
+        chapter,
+        progress: state.progress,
+        coreEntities: entities.map(e => ({
+          id: e.id,
+          name: e.canonical_name,
+          type: e.type,
+          tier: e.tier,
+        })),
+        activeForeshadowing: state.plot_threads?.foreshadowing ?? [],
+      };
+
+      indexManager.close();
 
       let output: string;
       switch (options.format) {
@@ -132,34 +181,23 @@ contextCommand
 function formatAsText(context: Record<string, unknown>): string {
   const lines: string[] = [];
 
-  if (context.characters) {
-    lines.push('【登场角色】');
-    for (const char of context.characters as Array<Record<string, unknown>>) {
-      lines.push(`- ${char.name}${char.role ? ` (${char.role})` : ''}`);
+  if (context.coreEntities) {
+    lines.push('【核心实体】');
+    for (const entity of context.coreEntities as Array<Record<string, unknown>>) {
+      lines.push(`- [${entity.type}] ${entity.name} (${entity.tier})`);
     }
-    lines.push('');
-  }
-
-  if (context.locations) {
-    lines.push('【场景地点】');
-    for (const loc of context.locations as Array<Record<string, unknown>>) {
-      lines.push(`- ${loc.name}`);
-    }
-    lines.push('');
-  }
-
-  if (context.previousEvents) {
-    lines.push('【前情提要】');
-    lines.push(context.previousEvents as string);
     lines.push('');
   }
 
   if (context.activeForeshadowing) {
-    lines.push('【活跃伏笔】');
-    for (const fs of context.activeForeshadowing as Array<Record<string, unknown>>) {
-      lines.push(`- ${fs.name}: ${fs.description}`);
+    const foreshadowing = context.activeForeshadowing as Array<Record<string, unknown>>;
+    if (foreshadowing.length > 0) {
+      lines.push('【活跃伏笔】');
+      for (const fs of foreshadowing) {
+        lines.push(`- ${fs.name || fs.id}: ${fs.description || ''}`);
+      }
+      lines.push('');
     }
-    lines.push('');
   }
 
   return lines.join('\n');
@@ -168,29 +206,20 @@ function formatAsText(context: Record<string, unknown>): string {
 function formatAsMarkdown(context: Record<string, unknown>): string {
   const lines: string[] = ['# 章节上下文'];
 
-  if (context.characters) {
-    lines.push('\n## 登场角色');
-    for (const char of context.characters as Array<Record<string, unknown>>) {
-      lines.push(`- **${char.name}**${char.role ? ` (${char.role})` : ''}`);
+  if (context.coreEntities) {
+    lines.push('\n## 核心实体');
+    for (const entity of context.coreEntities as Array<Record<string, unknown>>) {
+      lines.push(`- **${entity.name}** [${entity.type}] (${entity.tier})`);
     }
-  }
-
-  if (context.locations) {
-    lines.push('\n## 场景地点');
-    for (const loc of context.locations as Array<Record<string, unknown>>) {
-      lines.push(`- ${loc.name}`);
-    }
-  }
-
-  if (context.previousEvents) {
-    lines.push('\n## 前情提要');
-    lines.push(context.previousEvents as string);
   }
 
   if (context.activeForeshadowing) {
-    lines.push('\n## 活跃伏笔');
-    for (const fs of context.activeForeshadowing as Array<Record<string, unknown>>) {
-      lines.push(`- **${fs.name}**: ${fs.description}`);
+    const foreshadowing = context.activeForeshadowing as Array<Record<string, unknown>>;
+    if (foreshadowing.length > 0) {
+      lines.push('\n## 活跃伏笔');
+      for (const fs of foreshadowing) {
+        lines.push(`- **${fs.name || fs.id}**: ${fs.description || ''}`);
+      }
     }
   }
 

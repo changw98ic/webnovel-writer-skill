@@ -1,6 +1,6 @@
 import ora from 'ora';
 import chalk from 'chalk';
-import { StateManager, IndexManager } from '@webnovel-skill/data';
+import { StateManager, IndexManager } from '@changw98ic/data';
 
 interface QueryOptions {
   type?: string;

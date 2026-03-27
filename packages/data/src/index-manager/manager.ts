@@ -12,7 +12,7 @@ import {
   Alias,
   StateChange,
   Relationship,
-} from '@webnovel-skill/core';
+} from '@changw98ic/core';
 
 export interface IndexManagerOptions {
   projectRoot: string;

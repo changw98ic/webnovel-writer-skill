@@ -1,5 +1,5 @@
 {
-  "name": "@webnovel-skill/data",
+  "name": "@changw98ic/data",
   "version": "1.0.0",
   "description": "数据层 - 状态管理、实体索引、RAG 检索",
   "type": "module",
@@ -23,14 +23,42 @@
       "types": "./dist/rag/index.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch",
     "clean": "rm -rf dist",
-    "test": "vitest run packages/data"
+    "test": "vitest run packages/data",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "webnovel",
+    "writing",
+    "ai",
+    "rag",
+    "sqlite",
+    "state-management"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/changw98ic/webnovel-writer-skill.git",
+    "directory": "packages/data"
+  },
+  "bugs": {
+    "url": "https://github.com/changw98ic/webnovel-writer-skill/issues"
+  },
+  "homepage": "https://github.com/changw98ic/webnovel-writer-skill#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@webnovel-skill/core": "workspace:*",
+    "@changw98ic/core": "workspace:*",
     "better-sqlite3": "^11.0.0",
     "proper-lockfile": "^4.1.0",
     "undici": "^6.0.0",
@@ -41,5 +69,8 @@
     "@types/proper-lockfile": "^4.1.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^11.0.0"
   }
 }

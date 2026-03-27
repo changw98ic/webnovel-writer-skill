@@ -11,7 +11,7 @@
  */
 import { existsSync, mkdirSync, statSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { IndexManager } from '@webnovel-skill/data';
+import { IndexManager } from '@changw98ic/data';
 import { readJsonSafe, writeJsonAtomic } from './security.js';
 
 // ============================================================================

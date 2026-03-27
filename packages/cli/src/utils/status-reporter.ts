@@ -6,7 +6,7 @@
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { IndexManager } from '@webnovel-skill/data';
+import { IndexManager } from '@changw98ic/data';
 import { readJsonSafe } from './security.js';
 
 // ============================================================================

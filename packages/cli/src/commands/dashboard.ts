@@ -1,6 +1,6 @@
 import ora from 'ora';
 import chalk from 'chalk';
-import { createDashboard } from '@webnovel-skill/dashboard';
+import { createDashboard } from '@changw98ic/dashboard';
 
 interface DashboardOptions {
   port?: number;

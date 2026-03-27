@@ -7,8 +7,8 @@
  * - 别名索引管理
  * - 消歧结果记录
  */
-import { IndexManager } from '@webnovel-skill/data';
-import type { EntityType } from '@webnovel-skill/core';
+import { IndexManager } from '@changw98ic/data';
+import type { EntityType } from '@changw98ic/core';
 
 // ============================================================================
 // Types

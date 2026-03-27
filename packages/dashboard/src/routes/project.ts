@@ -2,7 +2,7 @@
  * Project Routes - 项目信息 API
  */
 import type { FastifyPluginAsync } from 'fastify';
-import { StateManager } from '@webnovel-skill/data';
+import { StateManager } from '@changw98ic/data';
 
 interface ProjectRoutesOptions {
   projectRoot: string;

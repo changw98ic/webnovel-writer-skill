@@ -3,7 +3,7 @@
  */
 import { Command } from 'commander';
 import { resolveProjectRoot } from '../utils/project-locator.js';
-import { IndexManager } from '@webnovel-skill/data';
+import { IndexManager } from '@changw98ic/data';
 
 export const indexCommand = new Command('index')
   .description('实体索引管理');

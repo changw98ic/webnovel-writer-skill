@@ -13,10 +13,10 @@
 
 ```bash
 # 全局安装
-npm install -g @webnovel-skill/cli
+npm install -g @changw98ic/cli
 
 # 或者在项目中安装
-npm install @webnovel-skill/core @webnovel-skill/data @webnovel-skill/adapters
+npm install @changw98ic/core @changw98ic/data @changw98ic/adapters
 ```
 
 ## 快速开始
@@ -55,10 +55,10 @@ webnovel adapt --platform openai --output ./functions/
 
 | 包名 | 用途 |
 |------|------|
-| `@webnovel-skill/core` | 核心类型和 Skill 定义 |
-| `@webnovel-skill/data` | 数据层（state/index/rag） |
-| `@webnovel-skill/adapters` | 平台适配器 |
-| `@webnovel-skill/cli` | 命令行工具 |
+| `@changw98ic/core` | 核心类型和 Skill 定义 |
+| `@changw98ic/data` | 数据层（state/index/rag） |
+| `@changw98ic/adapters` | 平台适配器 |
+| `@changw98ic/cli` | 命令行工具 |
 
 ## 开发
 

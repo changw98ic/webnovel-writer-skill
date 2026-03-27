@@ -1,6 +1,6 @@
 import ora from 'ora';
 import chalk from 'chalk';
-import { StateManager } from '@webnovel-skill/data';
+import { StateManager } from '@changw98ic/data';
 
 interface WriteOptions {
   fast?: boolean;

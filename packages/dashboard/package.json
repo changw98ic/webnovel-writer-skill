@@ -1,5 +1,5 @@
 {
-  "name": "@webnovel-skill/dashboard",
+  "name": "@changw98ic/dashboard",
   "version": "1.0.0",
   "description": "可视化面板 - Fastify 后端",
   "type": "module",
@@ -11,18 +11,46 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch",
     "start": "node dist/index.js",
     "clean": "rm -rf dist",
-    "test": "vitest run packages/dashboard"
+    "test": "vitest run packages/dashboard",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "webnovel",
+    "writing",
+    "ai",
+    "dashboard",
+    "fastify",
+    "visualization"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/changw98ic/webnovel-writer-skill.git",
+    "directory": "packages/dashboard"
+  },
+  "bugs": {
+    "url": "https://github.com/changw98ic/webnovel-writer-skill/issues"
+  },
+  "homepage": "https://github.com/changw98ic/webnovel-writer-skill#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
     "@fastify/static": "^7.0.4",
-    "@webnovel-skill/core": "workspace:*",
-    "@webnovel-skill/data": "workspace:*",
+    "@changw98ic/core": "workspace:*",
+    "@changw98ic/data": "workspace:*",
     "fastify": "^4.29.1"
   },
   "devDependencies": {

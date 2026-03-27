@@ -3,7 +3,7 @@
  */
 import { Command } from 'commander';
 import { resolveProjectRoot } from '../utils/project-locator.js';
-import { StateManager } from '@webnovel-skill/data';
+import { StateManager } from '@changw98ic/data';
 
 export const stateCommand = new Command('state')
   .description('状态管理');
@@ -18,14 +18,14 @@ stateCommand
     try {
       const projectRoot = resolveProjectRoot(options.projectRoot ?? process.cwd());
       const manager = new StateManager({ projectRoot });
-      const state = manager.getState();
+      const state = await manager.loadState();
 
       const stats = {
         progress: state.progress,
-        targetWords: state.target_words,
-        genreProfile: state.genre_profile ? Object.keys(state.genre_profile).length : 0,
+        targetWords: (state as any).target_words,
+        genreProfile: (state as any).genre_profile ? Object.keys((state as any).genre_profile).length : 0,
         foreshadowingCount: state.plot_threads?.foreshadowing?.length ?? 0,
-        reviewCheckpoints: state.review_checkpoints?.length ?? 0,
+        reviewCheckpoints: (state as any).review_checkpoints?.length ?? 0,
       };
 
       if (options.json) {

@@ -1,12 +1,12 @@
 {
-  "name": "@webnovel-skill/cli",
+  "name": "@changw98ic/cli",
   "version": "1.0.0",
   "description": "命令行工具 - webnovel 命令",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "webnovel": "./dist/index.js"
+    "webnovel": "dist/index.js"
   },
   "exports": {
     ".": {
@@ -14,17 +14,45 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch",
     "clean": "rm -rf dist",
-    "test": "vitest run packages/cli"
+    "test": "vitest run packages/cli",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "webnovel",
+    "writing",
+    "ai",
+    "cli",
+    "command-line",
+    "novel"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/changw98ic/webnovel-writer-skill.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/changw98ic/webnovel-writer-skill/issues"
+  },
+  "homepage": "https://github.com/changw98ic/webnovel-writer-skill#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@webnovel-skill/core": "workspace:*",
-    "@webnovel-skill/data": "workspace:*",
-    "@webnovel-skill/adapters": "workspace:*",
-    "@webnovel-skill/dashboard": "workspace:*",
+    "@changw98ic/core": "workspace:*",
+    "@changw98ic/data": "workspace:*",
+    "@changw98ic/adapters": "workspace:*",
+    "@changw98ic/dashboard": "workspace:*",
     "commander": "^12.0.0",
     "ora": "^8.0.0",
     "chalk": "^5.3.0",

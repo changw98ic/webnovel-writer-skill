@@ -3,7 +3,7 @@
  *
  * 将统一 Skill 定义转换为 OpenAI Function Calling 格式
  */
-import { Skill, ToolDefinition } from '@webnovel-skill/core';
+import { Skill, ToolDefinition } from '@changw98ic/core';
 
 export interface OpenAIFunction {
   name: string;

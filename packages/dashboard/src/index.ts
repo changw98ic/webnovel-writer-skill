@@ -1,5 +1,5 @@
 /**
- * @webnovel-skill/dashboard
+ * @changw98ic/dashboard
  *
  * 可视化面板 - Fastify 后端
  */

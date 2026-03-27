@@ -1,7 +1,7 @@
 import ora from 'ora';
 import chalk from 'chalk';
-import { adapt, Platform } from '@webnovel-skill/adapters';
-import type { Skill } from '@webnovel-skill/core';
+import { adapt, Platform } from '@changw98ic/adapters';
+import type { Skill } from '@changw98ic/core';
 import * as fs from 'fs';
 import * as path from 'path';
 

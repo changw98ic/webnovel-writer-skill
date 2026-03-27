@@ -1,5 +1,5 @@
 /**
- * @webnovel-skill/core
+ * @changw98ic/core
  *
  * 通用网文创作 Skill 框架 - 核心模块
  */

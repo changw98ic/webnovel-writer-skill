@@ -1,5 +1,5 @@
 /**
- * @webnovel-skill/data
+ * @changw98ic/data
  *
  * 数据层 - 状态管理、实体索引、 RAG 检索
  */
@@ -27,4 +27,4 @@ export type {
   Alias,
   StateChange,
   Relationship,
-} from '@webnovel-skill/core';
+} from '@changw98ic/core';
