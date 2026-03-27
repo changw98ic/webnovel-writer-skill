@@ -33,13 +33,17 @@ import { generateOpenClawSkill } from '@changw98ic/adapters/openclaw';
 
 > 提示：`@changw98ic/adapters/openclaw` 也导出了 `generateOpenClawSkills`。
 
+### CLI 配合
+
+```bash
+webnovel adapt --platform claude-code --output ./out
+```
+
+> `webnovel adapt` 当前使用 CLI 内置 `builtinSkills` 生成文件；如果你需要仓库里的插件版 Skill 资源，请查看根 `README.md` 与 `webnovel-writer/` 目录。
+
 ## 文档
 
-详见 [项目主页](https://github.com/changw98ic/webnovel-writer-skill#readme)
-
-## 致谢
-
-本项目基于 [lingfengQAQ/webnovel-writer](https://github.com/lingfengQAQ/webnovel-writer) 开发。
+详见 <https://github.com/changw98ic/webnovel-writer-skill#readme>
 
 ## License
 

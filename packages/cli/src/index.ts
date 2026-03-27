@@ -25,7 +25,7 @@ import { workflowCommand } from './commands/workflow.js';
 import { updateStateCommand } from './commands/update-state.js';
 import { extractContextCommand } from './commands/extract-context.js';
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 
 const program = new Command();
 

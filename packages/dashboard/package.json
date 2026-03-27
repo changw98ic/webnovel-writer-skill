@@ -1,6 +1,6 @@
 {
   "name": "@changw98ic/dashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "可视化面板 - Fastify 后端",
   "type": "module",
   "main": "dist/index.js",

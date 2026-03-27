@@ -1,6 +1,6 @@
 {
   "name": "@changw98ic/data",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "数据层 - 状态管理、实体索引、RAG 检索",
   "type": "module",
   "main": "dist/index.js",

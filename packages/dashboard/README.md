@@ -1,6 +1,6 @@
 # @changw98ic/dashboard
 
-可视化面板 - Fastify 后端。
+可视化面板后端，基于 Fastify 暴露项目、章节、实体和统计接口。
 
 ## 安装
 
@@ -8,33 +8,44 @@
 npm install @changw98ic/dashboard
 ```
 
-## 使用
+## 代码使用
 
 ```typescript
 import { createDashboard } from '@changw98ic/dashboard';
 
-const dashboard = createDashboard({
+const dashboard = await createDashboard({
   port: 3000,
-  projectRoot: '/path/to/novel'
+  host: 'localhost',
+  projectRoot: '/path/to/novel',
 });
 
 await dashboard.start();
 ```
 
-## 命令行
+## CLI 使用
+
+`webnovel` 命令来自 `@changw98ic/cli`，不是本包直接提供：
 
 ```bash
-npx webnovel dashboard
+# 临时执行
+cd /path/to/novel
+npx @changw98ic/cli dashboard --port 3000
+
+# 或全局安装 @changw98ic/cli 后执行
+webnovel dashboard --port 3000
 ```
+
+## 运行说明
+
+- `createDashboard()` 是异步工厂函数，需要先 `await`。
+- 未显式传入 `staticDir` 时，会自动探测前端构建目录。
+- 如果未找到静态资源，会退化为 API-only 模式，接口仍可访问。
 
 ## 文档
 
-详见 [项目主页](https://github.com/changw98ic/webnovel-writer-skill#readme)
-
-## 致谢
-
-本项目基于 [lingfengQAQ/webnovel-writer-skill](https://github.com/lingfengQAQ/webnovel-writer-skill) 开发。
+- 项目主页：<https://github.com/changw98ic/webnovel-writer-skill#readme>
+- 工作区包总览：`packages/README.md`
 
 ## License
 
-MIT
+GPL-3.0-or-later

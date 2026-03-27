@@ -7,7 +7,9 @@ import { BackupManager } from '../utils/backup-manager.js';
 
 export const backupCommand = new Command('backup')
   .description('Git 版本控制操作')
-  .option('-p, --project-root <path>', '项目根目录')
+  .option('-p, --project-root <path>', '项目根目录');
+
+backupCommand
   .command('create <chapter>')
   .description('创建章节备份')
   .option('-m, --message <message>', '备份消息')

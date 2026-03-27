@@ -1,91 +1,83 @@
-# Webnovel Skill - Node.js 版本
+# Webnovel Writer npm packages
 
-通用网文创作 Skill 框架的 Node.js/TypeScript 实现。
+`packages/` 目录对应本仓库的 pnpm workspace 包；它和根 `README.md` 里的 Claude Plugin / Python 使用说明是两套入口：
 
-## 特性
-
-- **多平台支持**: 一次定义，自动适配到 Claude Code / OpenAI / Cursor / OpenClaw
-- **数据兼容**: 完全兼容现有 Python 版本的 state.json 和 index.db
-- **类型安全**: TypeScript + Zod 提供完整的类型检查
-- **NPM 发布**: 可作为 npm 包安装使用
+- `packages/*`：Node.js / TypeScript npm 包
+- `webnovel-writer/`：插件运行时资源、Skill、Agent、模板与脚本
 
 ## 安装
 
 ```bash
-# 全局安装
+# CLI 入口
 npm install -g @changw98ic/cli
 
-# 或者在项目中安装
-npm install @changw98ic/core @changw98ic/data @changw98ic/adapters
+# 按需安装库
+npm install @changw98ic/core @changw98ic/data @changw98ic/adapters @changw98ic/dashboard
 ```
 
-## 快速开始
+## 包结构
+
+- `@changw98ic/core`：核心类型、Skill 结构、共享模型
+- `@changw98ic/data`：状态管理、实体索引、RAG 检索
+- `@changw98ic/adapters`：Claude Code / OpenAI / Cursor / OpenClaw 适配输出
+- `@changw98ic/dashboard`：Fastify Dashboard 后端
+- `@changw98ic/cli`：`webnovel` 命令行入口
+
+## CLI 快速开始
 
 ```bash
-# 初始化项目
+webnovel --help
+
 webnovel init "我的小说"
-
-# 规划章节
-webnovel plan 1
-
-# 写作
-webnovel write 1
-
-# 审查
-webnovel review 1-5
-
-# 查询
-webnovel query "萧炎"
+webnovel plan 1 --detailed
+webnovel write 1 --fast
+webnovel review 1-5 --detailed
+webnovel query 主角 --type entity
 ```
 
 ## 平台适配
 
 ```bash
-# 生成 Claude Code SKILL.md
-webnovel adapt --platform claude-code --output ./skills/
-
-# 生成 Cursor .cursorrules
+webnovel adapt --platform claude-code --output ./skills
 webnovel adapt --platform cursor --output ./
-
-# 生成 OpenAI Function Calling
-webnovel adapt --platform openai --output ./functions/
+webnovel adapt --platform openai --output ./functions
 ```
 
-## 包结构
+> 当前 `webnovel adapt` 使用 CLI 内置 `builtinSkills` 生成文件，不会直接读取 `webnovel-writer/skills/*` Markdown Skill 文件。
 
-| 包名 | 用途 |
-|------|------|
-| `@changw98ic/core` | 核心类型和 Skill 定义 |
-| `@changw98ic/data` | 数据层（state/index/rag） |
-| `@changw98ic/adapters` | 平台适配器 |
-| `@changw98ic/cli` | 命令行工具 |
+## RAG 配置
+
+```bash
+export EMBED_BASE_URL=https://api-inference.modelscope.cn/v1
+export EMBED_MODEL=Qwen/Qwen3-Embedding-8B
+export EMBED_API_KEY=your_embed_api_key
+
+export RERANK_BASE_URL=https://api.jina.ai/v1
+export RERANK_MODEL=jina-reranker-v3
+export RERANK_API_KEY=your_rerank_api_key
+```
+
+- `@changw98ic/data` 的 `RAGAdapter` 默认从 `process.env` 读取这些变量
+- 当前 TypeScript 包侧未内置项目级 `.env` 自动加载逻辑；如果独立使用 npm 包，请自行导出环境变量或手动加载 `.env`
+- 插件版 `.env` 约定见根 `README.md` 与 `docs/rag-and-config.md`
 
 ## 开发
 
 ```bash
-# 安装依赖
 pnpm install
-
-# 构建
 pnpm build
-
-# 测试
 pnpm test
-
-# 开发模式（监听文件变化）
-pnpm dev
+pnpm lint
+pnpm cli --help
 ```
 
-## 从 Python 版本迁移
+## 文档入口
 
-Node.js 版本完全兼容现有数据格式：
+- 根 README：插件安装、Python 入口、整体介绍
+- `docs/commands.md`：命令详解
+- `docs/rag-and-config.md`：RAG 与配置
+- `packages/*/README.md`：各 npm 包单独说明
 
-- `state.json` - 直接读写，无需转换
-- `index.db` - 使用 better-sqlite3，表结构不变
-- `vectors.db` - 向量索引格式不变
+## License
 
-只需安装 Node.js 版本，现有项目可直接使用。
-
-## 许可证
-
-GPL-3.0
+GPL-3.0-or-later
