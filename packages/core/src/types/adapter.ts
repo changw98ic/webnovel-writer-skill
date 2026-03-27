@@ -86,7 +86,7 @@ export type OpenClawSkill = z.infer<typeof OpenClawSkillSchema>;
 // ============================================================================
 
 export const AdapterOutputSchema = z.object({
-  platform: z.enum(['claude-code', 'openai', 'cursor', 'openclaw']),
+  platform: z.enum(['claude-code', 'openai', 'cursor', 'openclaw', 'codex', 'opencode']),
   files: z.array(z.object({
     path: z.string(),
     content: z.string(),

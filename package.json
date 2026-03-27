@@ -2,7 +2,7 @@
   "name": "webnovel-skill",
   "version": "1.0.0",
   "private": true,
-  "description": "通用网文创作 Skill 框架 - 支持 Claude Code / OpenAI / Cursor / OpenClaw",
+  "description": "通用网文创作 Skill 框架 - 支持 Claude Code / OpenAI / Cursor / OpenClaw / Codex / OpenCode",
   "scripts": {
     "build": "pnpm -r build",
     "test": "vitest run",

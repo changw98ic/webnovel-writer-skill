@@ -4,6 +4,7 @@
  * 平台适配器统一入口
  */
 
+import { generateBundle } from './bundle/generator.js';
 import { generateClaudeSkill } from './claude-code/generator.js';
 import { generateCursorRules } from './cursor/generator.js';
 import { generateOpenAIFunctions } from './openai/generator.js';
@@ -11,7 +12,7 @@ import { generateOpenClawSkill } from './openclaw/generator.js';
 
 import { Skill } from '@changw98ic/core';
 
-export type Platform = 'claude-code' | 'cursor' | 'openai' | 'openclaw';
+export type Platform = 'claude-code' | 'cursor' | 'openai' | 'openclaw' | 'codex' | 'opencode';
 
 export interface AdapterOptions {
   platform: Platform;
@@ -31,6 +32,7 @@ export function adapt(options: AdapterOptions): AdapterOutput {
   const { platform, skills } = options;
 
   const files: Array<{ path: string; content: string }> = [];
+  let metadata: Record<string, unknown> | undefined;
 
   switch (platform) {
     case 'claude-code':
@@ -39,14 +41,14 @@ export function adapt(options: AdapterOptions): AdapterOutput {
       }
       break;
 
-    case 'cursor':
-      const allRules = skills.map(s => generateCursorRules(s));
-      // 合并为一个文件
+    case 'cursor': {
+      const allRules = skills.map((skill) => generateCursorRules(skill));
       files.push({
         path: '.cursorrules',
-        content: allRules.map(r => r.content).join('\n\n---\n\n'),
+        content: allRules.map((rule) => rule.content).join('\n\n---\n\n'),
       });
       break;
+    }
 
     case 'openai':
       for (const skill of skills) {
@@ -69,23 +71,24 @@ export function adapt(options: AdapterOptions): AdapterOutput {
       break;
 
     case 'openclaw':
-      for (const skill of skills) {
-        const output = generateOpenClawSkill(skill);
-        files.push({
-          path: output.path,
-          content: output.content,
-        });
-      }
+    case 'codex':
+    case 'opencode': {
+      const bundleOutput = generateBundle(platform);
+      files.push(...bundleOutput.files);
+      metadata = { ...bundleOutput.metadata };
       break;
+    }
 
     default:
       throw new Error(`Unknown platform: ${platform}`);
   }
 
-  return { files };
+  return { files, metadata };
 }
 
 // Re-export generator functions
-export { generateClaudeSkill, generateCursorRules, generateOpenAIFunctions, generateOpenClawSkill };
+export { generateBundle, generateClaudeSkill, generateCursorRules, generateOpenAIFunctions, generateOpenClawSkill };
+
+export type { BundlePlatform, BundleOutput, BundleMetadata, BundleFileOutput } from './bundle/generator.js';
 
 export default adapt;

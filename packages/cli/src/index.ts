@@ -25,7 +25,7 @@ import { workflowCommand } from './commands/workflow.js';
 import { updateStateCommand } from './commands/update-state.js';
 import { extractContextCommand } from './commands/extract-context.js';
 
-const VERSION = '1.0.1';
+const VERSION = '1.1.0';
 
 const program = new Command();
 
@@ -82,7 +82,7 @@ program
 program
   .command('adapt')
   .description('生成平台适配文件')
-  .requiredOption('-p, --platform <platform>', '目标平台 (claude-code|cursor|openai|openclaw)')
+  .requiredOption('-p, --platform <platform>', '目标平台 (claude-code|cursor|openai|openclaw|codex|opencode)')
   .requiredOption('-o, --output <dir>', '输出目录')
   .action(adaptCommand);
 

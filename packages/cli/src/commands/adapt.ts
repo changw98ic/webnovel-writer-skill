@@ -10,6 +10,8 @@ interface AdaptOptions {
   output: string;
 }
 
+const DIRECT_BUNDLE_PLATFORMS = new Set<Platform>(['openclaw', 'codex', 'opencode']);
+
 // 内置 Skills（简化版）
 const builtinSkills: Skill[] = [
   {
@@ -82,19 +84,17 @@ export async function adaptCommand(options: AdaptOptions) {
   const spinner = ora(`生成 ${options.platform} 适配文件...`).start();
 
   try {
-    // 确保输出目录存在
     if (!fs.existsSync(options.output)) {
       fs.mkdirSync(options.output, { recursive: true });
     }
 
-    // 生成适配文件
+    const useDirectBundle = DIRECT_BUNDLE_PLATFORMS.has(options.platform);
     const result = adapt({
       platform: options.platform,
       outputDir: options.output,
-      skills: builtinSkills,
+      skills: useDirectBundle ? [] : builtinSkills,
     });
 
-    // 写入文件
     for (const file of result.files) {
       const filePath = path.join(options.output, file.path);
       const dir = path.dirname(filePath);
@@ -109,14 +109,41 @@ export async function adaptCommand(options: AdaptOptions) {
 
     spinner.succeed('适配文件生成完成');
 
+    const skillCount = getNumericMetadata(result.metadata, 'skillCount') ?? builtinSkills.length;
+    const bundleRoot = getStringMetadata(result.metadata, 'bundleRoot');
+    const sourceRoot = getStringMetadata(result.metadata, 'sourceRoot');
+    const nativePluginRoot = getStringMetadata(result.metadata, 'nativePluginRoot');
+
     console.log('');
     console.log(chalk.dim(`输出目录: ${options.output}`));
     console.log(chalk.dim(`平台: ${options.platform}`));
-    console.log(chalk.dim(`Skills: ${builtinSkills.length} 个`));
+    console.log(chalk.dim(`模式: ${useDirectBundle ? '直接可用 bundle' : '内置 Skill 适配'}`));
+    console.log(chalk.dim(`Skills: ${skillCount} 个`));
 
+    if (bundleRoot) {
+      console.log(chalk.dim(`Bundle 根目录: ${bundleRoot}`));
+    }
+
+    if (sourceRoot) {
+      console.log(chalk.dim(`运行时资源: ${sourceRoot}`));
+    }
+
+    if (nativePluginRoot) {
+      console.log(chalk.dim(`Native plugin: ${nativePluginRoot}`));
+    }
   } catch (error) {
     spinner.fail('生成失败');
     console.error(chalk.red(error instanceof Error ? error.message : String(error)));
     process.exit(1);
   }
+}
+
+function getNumericMetadata(metadata: Record<string, unknown> | undefined, key: string): number | undefined {
+  const value = metadata?.[key];
+  return typeof value === 'number' ? value : undefined;
+}
+
+function getStringMetadata(metadata: Record<string, unknown> | undefined, key: string): string | undefined {
+  const value = metadata?.[key];
+  return typeof value === 'string' ? value : undefined;
 }

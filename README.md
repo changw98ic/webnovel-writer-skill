@@ -7,40 +7,39 @@
 [![pnpm](https://img.shields.io/badge/pnpm-9-f69220.svg)](https://pnpm.io/)
 [![npm scope](https://img.shields.io/badge/npm-%40changw98ic%2F*-cb3837.svg)](https://www.npmjs.com/search?q=%40changw98ic)
 
-`Webnovel Writer` 现在是一个同时包含 **Claude Plugin 运行时** 与 **Node.js / TypeScript 工具链** 的 monorepo。
+`Webnovel Writer` 现在是一个同时包含 **Claude Plugin 运行时**、**npm CLI / TypeScript 包**、以及 **Codex / OpenCode / OpenClaw 直接可用 Skill bundle** 的 monorepo。
 
-适配场景：**Claude Plugin、npm CLI、Cursor、OpenAI、OpenClaw**；`Codex / OpenCode` 当前通过 CLI / npm 包接入。
+当前仓库有两条主入口：
 
-当前仓库有两条明确入口：
+- `webnovel-writer/`：原始运行时资产，包含 Skills、Agents、参考资料、模板、Python 数据链与 Dashboard
+- `packages/*`：npm 包、CLI、适配器与 Dashboard 后端
 
-- `webnovel-writer/`：Claude Plugin 运行时资源、Skills、Agents、模板、Python 数据链
-- `packages/*`：npm 包、CLI、适配器、Dashboard 后端
+## 当前支持什么
 
-## 仓库现在包含什么
-
-### 1) Claude Plugin / Python 写作链
+### 1) Claude Plugin / Python 运行时
 
 - 插件元数据：`.claude-plugin/marketplace.json`
 - 插件包元数据：`webnovel-writer/.claude-plugin/plugin.json`
-- Skills / Agents / 模板 / 参考资料：`webnovel-writer/`
-- Python 数据模块与 RAG 链路：`webnovel-writer/scripts/data_modules/`
+- Skills / Agents / 参考资料 / 模板 / 脚本：`webnovel-writer/`
 
 ### 2) npm 包与 CLI
 
 - `@changw98ic/core`：核心类型、Schema、共享模型
 - `@changw98ic/data`：状态管理、实体索引、RAG 检索
-- `@changw98ic/adapters`：Claude Code / Cursor / OpenAI / OpenClaw 适配输出
-- `@changw98ic/dashboard`：Fastify Dashboard 后端
+- `@changw98ic/adapters`：平台适配器与 bundle 生成
+- `@changw98ic/dashboard`：Dashboard 后端
 - `@changw98ic/cli`：`webnovel` 命令行入口
 
-### 3) 当前已落地的平台适配
+### 3) 当前平台适配矩阵
 
-- Claude Code
-- Cursor
-- OpenAI
-- OpenClaw
+- `claude-code`：生成 Markdown `SKILL.md`
+- `cursor`：生成 `.cursorrules`
+- `openai`：生成 `functions.json` 与 prompt 模板
+- `codex`：生成 `.codex/skills/*`、`.codex/agents/*` 等直接可用 bundle
+- `opencode`：生成 `.opencode/skills/*`、`.opencode/agents/*` 等直接可用 bundle
+- `openclaw`：生成工作区级 bundle，并额外生成 `openclaw-plugin/` 原生插件包
 
-> 这些适配入口来自 `packages/cli/src/index.ts` 的 `adapt` 命令和 `packages/adapters/src/index.ts` 的平台分发逻辑。
+> `codex / opencode / openclaw` 现在走的是 **完整运行时资产 bundle**，来源不是 CLI 里的简化 `builtinSkills`，而是 `webnovel-writer/` 下的真实 Skill / Agent / 脚本目录。
 
 ## 快速开始
 
@@ -51,15 +50,13 @@ claude plugin marketplace add changw98ic/webnovel-writer-skill --scope user
 claude plugin install webnovel-writer@webnovel-writer-marketplace --scope user
 ```
 
-> 仅当前项目生效时，将 `--scope user` 改为 `--scope project`。
-
 安装 Python 依赖：
 
 ```bash
 python -m pip install -r https://raw.githubusercontent.com/changw98ic/webnovel-writer-skill/HEAD/requirements.txt
 ```
 
-初始化项目后，在 Claude Code 中执行：
+然后在 Claude Code 中执行：
 
 ```bash
 /webnovel-init
@@ -81,68 +78,101 @@ webnovel review 1-5 --detailed
 webnovel query 主角 --type entity
 ```
 
-### 方案 C：按平台生成适配文件
+### 方案 C：生成直接可用 bundle / 适配文件
 
 ```bash
-webnovel adapt --platform claude-code --output ./skills
-webnovel adapt --platform cursor --output ./
-webnovel adapt --platform openai --output ./functions
-webnovel adapt --platform openclaw --output ./skills
+# 完整 bundle
+webnovel adapt --platform codex --output ./target
+webnovel adapt --platform opencode --output ./target
+webnovel adapt --platform openclaw --output ./target
+
+# 旧式 adapter 输出
+webnovel adapt --platform claude-code --output ./target
+webnovel adapt --platform cursor --output ./target
+webnovel adapt --platform openai --output ./target
 ```
 
-说明：
+生成结果的关键结构：
 
-- `cursor` 会生成 `.cursorrules`
-- `openai` 会输出 `functions.json` 与 prompt 文件
-- `adapt` 当前使用 CLI 内置 `builtinSkills`，不是直接读取 `webnovel-writer/skills/*`
+```text
+codex    -> target/.codex/{skills,agents,references,scripts,templates,dashboard,genres}
+opencode -> target/.opencode/{skills,agents,references,scripts,templates,dashboard,genres}
+openclaw -> target/{skills,agents,references,scripts,templates,dashboard,genres}
+          + target/openclaw-plugin/{openclaw.plugin.json,package.json,index.ts,...}
+```
 
-## Cursor / Codex / OpenCode
+每个 bundle 都会额外生成：
 
-### Cursor
+- `webnovel-bootstrap-env.sh`：把 `CLAUDE_PLUGIN_ROOT` 绑定到当前 bundle 根目录
+- `WEBNOVEL_BUNDLE.md`：bundle 用法说明
+- `openclaw-plugin/`：OpenClaw native plugin 包（仅 `--platform openclaw` 生成）
 
-Cursor 在当前仓库里有**明确的适配实现**：
-
-- CLI 入口：`packages/cli/src/index.ts`
-- 平台适配器：`packages/adapters/src/index.ts`
-- Cursor 生成器：`packages/adapters/src/cursor/generator.ts`
-
-推荐用法：
+使用 bundle 前先执行：
 
 ```bash
-webnovel adapt --platform cursor --output ./
+# codex
+source "$PWD/.codex/webnovel-bootstrap-env.sh"
+
+# opencode
+source "$PWD/.opencode/webnovel-bootstrap-env.sh"
+
+# openclaw
+source "$PWD/webnovel-bootstrap-env.sh"
 ```
 
-### Codex / OpenCode
+## CLI `adapt` 现在怎么用 Skill
 
-当前仓库里**没有找到专门命名为 `codex` 或 `opencode` 的 adapter target、模板目录或生成器文件**。
+### `codex / opencode / openclaw`
 
-如果你要在 Codex / OpenCode 这类代理终端中使用本仓库，当前更合适的入口是：
+这 3 个平台现在直接复制并输出 `webnovel-writer/` 下的真实资产：
 
-- 直接安装并运行 `@changw98ic/cli`
-- 直接调用 `packages/*` 提供的 npm 包
-- 参考 `Cursor / OpenAI / Claude Code` 已有适配产物组织自己的终端工作流
+- `skills/`
+- `agents/`
+- `references/`
+- `scripts/`
+- `templates/`
+- `dashboard/`
+- `genres/`
 
-> 也就是说：**Cursor 适配是当前源码里明确存在的；Codex / OpenCode 目前更像“使用场景”，不是仓库里已有的专用适配目标。**
+并在每个 `SKILL.md` 顶部注入平台引导；OpenClaw Skill 会使用官方 `{baseDir}` 占位符定位 `webnovel-bootstrap-env.sh`。
+
+### `claude-code / cursor / openai`
+
+这 3 个平台仍然沿用 `packages/cli/src/commands/adapt.ts` 里的简化 `builtinSkills`：
+
+- `claude-code`：适合导出示例 `SKILL.md`
+- `cursor`：适合生成 `.cursorrules`
+- `openai`：适合导出 function calling 结构
+
+### OpenClaw native plugin 安装
+
+```bash
+webnovel adapt --platform openclaw --output ./target
+cd ./target
+openclaw plugins install ./openclaw-plugin
+openclaw plugins enable webnovel-writer-skill
+# 然后重启 gateway
+```
 
 ## RAG 配置
 
 最小环境变量示例：
 
 ```bash
-EMBED_BASE_URL=https://api-inference.modelscope.cn/v1
-EMBED_MODEL=Qwen/Qwen3-Embedding-8B
-EMBED_API_KEY=your_embed_api_key
+export EMBED_BASE_URL=https://api-inference.modelscope.cn/v1
+export EMBED_MODEL=Qwen/Qwen3-Embedding-8B
+export EMBED_API_KEY=your_embed_api_key
 
-RERANK_BASE_URL=https://api.jina.ai/v1
-RERANK_MODEL=jina-reranker-v3
-RERANK_API_KEY=your_rerank_api_key
+export RERANK_BASE_URL=https://api.jina.ai/v1
+export RERANK_MODEL=jina-reranker-v3
+export RERANK_API_KEY=your_rerank_api_key
 ```
 
 补充说明：
 
-- npm 包侧的 `RAGAdapter` 默认读取 `process.env`
-- TypeScript 包当前未内置项目级 `.env` 自动加载
-- 插件版 `.env` 与 Python 数据链约定见 `docs/rag-and-config.md`
+- `@changw98ic/data` 的 `RAGAdapter` 默认读取 `process.env`
+- npm 包侧当前未内置项目级 `.env` 自动加载
+- 插件版 `.env` / Python 数据链约定见 `docs/rag-and-config.md`
 
 ## 目录结构
 
@@ -157,9 +187,11 @@ RERANK_API_KEY=your_rerank_api_key
 ├── webnovel-writer/
 │   ├── skills/
 │   ├── agents/
-│   ├── templates/
 │   ├── references/
-│   └── scripts/
+│   ├── templates/
+│   ├── scripts/
+│   ├── dashboard/
+│   └── genres/
 ├── docs/
 └── .claude-plugin/
 ```
@@ -176,12 +208,11 @@ pnpm cli --help
 
 ## 文档入口
 
-- `docs/README.md`：文档导航
-- `docs/architecture.md`：整体结构
-- `docs/commands.md`：命令详解
-- `docs/rag-and-config.md`：RAG 与配置
 - `packages/README.md`：npm 包总览
-- `packages/*/README.md`：各包单独说明
+- `packages/cli/README.md`：CLI 用法
+- `packages/adapters/README.md`：适配器与 bundle 生成
+- `docs/commands.md`：命令说明
+- `docs/rag-and-config.md`：RAG 与配置
 
 ## 开源协议
 
@@ -189,4 +220,4 @@ pnpm cli --help
 
 ## 致谢
 
-本项目基于 [lingfengQAQ/webnovel-writer](https://github.com/lingfengQAQ/webnovel-writer) 演进而来，当前仓库已补充 npm 包发布、CLI、Dashboard 与多平台适配链路。
+本项目基于 [lingfengQAQ/webnovel-writer](https://github.com/lingfengQAQ/webnovel-writer) 演进而来；当前仓库在其基础上补充了 npm 发布、CLI、Dashboard 与多平台 bundle / adapter 生成链路。

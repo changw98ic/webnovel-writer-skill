@@ -1,6 +1,6 @@
 # @changw98ic/cli
 
-`webnovel` 命令行入口，用于初始化项目、执行写作链、生成适配文件，以及管理状态 / 索引 / RAG / 备份。
+`webnovel` 命令行入口，用于初始化项目、执行写作链、生成平台适配文件，以及管理状态 / 索引 / RAG / 备份。
 
 ## 安装
 
@@ -27,12 +27,12 @@ webnovel query 主角 --type entity
 
 ### 创作链
 
-- `init <title>`：初始化新项目
+- `init <title>`：初始化新小说项目
 - `plan <chapter>`：规划章节大纲
 - `write <chapter>`：写作章节
 - `review <range>`：审查章节质量
 - `query <keyword>`：查询项目状态
-- `adapt`：生成平台适配文件
+- `adapt`：生成平台适配文件 / Skill bundle
 - `dashboard`：启动可视化面板
 - `resume`：恢复中断任务（当前仍是占位实现）
 
@@ -58,17 +58,53 @@ webnovel query 主角 --type entity
 - `update-state`
 - `extract-context`
 
-> 建议直接执行 `webnovel <命令> --help` 查看各命令的实时参数面。
-
 ## `adapt` 如何使用 Skill
 
+### 直接可用 bundle
+
 ```bash
-webnovel adapt --platform claude-code --output ./out
+webnovel adapt --platform codex --output ./target
+webnovel adapt --platform opencode --output ./target
+webnovel adapt --platform openclaw --output ./target
 ```
 
-- `--platform` 可选：`claude-code`、`cursor`、`openai`、`openclaw`
-- 当前 `adapt` 命令直接使用 `packages/cli/src/commands/adapt.ts` 中的内置 `builtinSkills`
-- 它不会直接读取仓库里的 `webnovel-writer/skills/*` Markdown Skill 文件
+输出结构：
+
+```text
+codex    -> ./target/.codex/...
+opencode -> ./target/.opencode/...
+openclaw -> ./target/skills/... ./target/agents/... ./target/references/...
+          + ./target/openclaw-plugin/...
+```
+
+这些平台现在会直接输出 `webnovel-writer/` 下的完整运行时资产：
+
+- `skills/`
+- `agents/`
+- `references/`
+- `scripts/`
+- `templates/`
+- `dashboard/`
+- `genres/`
+
+并额外生成：
+
+- `webnovel-bootstrap-env.sh`
+- `WEBNOVEL_BUNDLE.md`
+- `openclaw-plugin/`（仅 `--platform openclaw`）
+
+### 旧式 adapter 输出
+
+```bash
+webnovel adapt --platform claude-code --output ./target
+webnovel adapt --platform cursor --output ./target
+webnovel adapt --platform openai --output ./target
+```
+
+- `openclaw` 额外生成 `openclaw-plugin/openclaw.plugin.json`、`package.json`、`index.ts`
+- `claude-code / cursor / openai` 仍使用 `packages/cli/src/commands/adapt.ts` 中的内置 `builtinSkills`
+- `cursor` 会输出 `.cursorrules`
+- `openai` 会输出 `functions.json` 与 prompt 文件
 
 ## RAG 配置
 
@@ -80,21 +116,27 @@ export EMBED_API_KEY=your_embed_api_key
 export RERANK_BASE_URL=https://api.jina.ai/v1
 export RERANK_MODEL=jina-reranker-v3
 export RERANK_API_KEY=your_rerank_api_key
-
-webnovel rag stats
-webnovel rag search "主角身份" --top-k 5
 ```
 
 - TypeScript 版 `RAGAdapter` 默认读取 `process.env` 中的 `EMBED_*` / `RERANK_*`
 - 当前 npm CLI 包内未内置项目级 `.env` 自动加载逻辑；独立使用时，请先在 shell 导出环境变量，或由宿主进程自行加载 `.env`
-- 仓库内插件版 `.env` 约定见根 `README.md` 与 `docs/rag-and-config.md`
+- 插件版 `.env` 约定见根 `README.md` 与 `docs/rag-and-config.md`
 
 ## 文档
 
 - 项目主页：<https://github.com/changw98ic/webnovel-writer-skill#readme>
+- 平台适配：`packages/adapters/README.md`
 - RAG 与配置：`docs/rag-and-config.md`
-- 工作区包总览：`packages/README.md`
 
 ## License
 
 GPL-3.0-or-later
+
+## OpenClaw native plugin 安装
+
+```bash
+webnovel adapt --platform openclaw --output ./target
+openclaw plugins install ./target/openclaw-plugin
+openclaw plugins enable webnovel-writer-skill
+# 然后重启 gateway
+```
