@@ -13,20 +13,25 @@ npm install @changw98ic/core
 ### 根入口
 
 ```typescript
+import { ProjectStateSchema, validateProjectState } from '@changw98ic/core';
 import {
-  Skill,
-  SkillContext,
-  SkillResult,
-  ProjectState,
-  Entity,
-  EntityType,
+  type Skill,
+  type ProjectState,
+  type Entity,
+  type EntityType,
 } from '@changw98ic/core';
 ```
 
 ### 子路径导入
 
 ```typescript
-import { ProjectState, Entity, EntityType } from '@changw98ic/core/types';
+import { ProjectStateSchema } from '@changw98ic/core/types';
+import type {
+  Skill,
+  ProjectState,
+  Entity,
+  EntityType,
+} from '@changw98ic/core/types';
 ```
 
 ## 说明
@@ -34,6 +39,8 @@ import { ProjectState, Entity, EntityType } from '@changw98ic/core/types';
 - 根入口当前主要重导出 `types` 模块。
 - 已发布的导出路径见 `packages/core/package.json`：`.`、`./types`。
 - 上层 CLI、数据层和适配器包都依赖这里的类型定义。
+- `ProjectState`、`Entity`、`EntityType`、`Skill` 是 TypeScript 类型；在 TS 中请用 `import type`。
+- 纯运行时可直接导入的是 `ProjectStateSchema`、`EntitySchema`、`SkillSchema`、`validateProjectState()` 这类 JS 导出。
 
 ## 文档
 
