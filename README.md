@@ -32,7 +32,7 @@ claude plugin install webnovel-writer@webnovel-writer-marketplace --scope user
 ### 2) 安装 Python 依赖
 
 ```bash
-python -m pip install -r https://raw.githubusercontent.com/lingfengQAQ/webnovel-writer/HEAD/requirements.txt
+python -m pip install -r https://raw.githubusercontent.com/changw98ic/webnovel-writer-skill/HEAD/requirements.txt
 ```
 
 说明：该入口会同时安装核心写作链路与 Dashboard 依赖。
@@ -151,7 +151,11 @@ model: sonnet
 
 ## Star 历史
 
-[![Star History Chart](https://api.star-history.com/svg?repos=lingfengQAQ/webnovel-writer&type=Date)](https://star-history.com/#lingfengQAQ/webnovel-writer&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=changw98ic/webnovel-writer-skill&type=Date)](https://star-history.com/#changw98ic/webnovel-writer-skill&Date)
+
+## 致谢
+
+本项目基于 [lingfengQAQ/webnovel-writer-skill](https://github.com/lingfengQAQ/webnovel-writer-skill) 开发，感谢原作者的开源贡献。
 
 ## 致谢
 
