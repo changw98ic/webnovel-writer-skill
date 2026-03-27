@@ -5,22 +5,43 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-purple.svg)](https://claude.ai/claude-code)
 
 <a href="https://trendshift.io/repositories/22487" target="_blank"><img src="https://trendshift.io/api/badge/repositories/22487" alt="changw98ic%2Fwebnovel-writer-skill | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-## 项目简单介绍
 
-`Webnovel Writer` 是基于 Claude Code 的长篇网文创作系统，目标是降低 AI 写作中的“遗忘”和“幻觉”，支持长周期连载创作。
+`Webnovel Writer` 现在是一个同时包含 **Claude Plugin 运行时** 与 **Node.js / TypeScript 工具链** 的 monorepo。
 
-详细文档已拆分到 `docs/`：
+当前仓库有两条明确入口：
 
-- 架构与模块：`docs/architecture.md`
-- 命令详解：`docs/commands.md`
-- RAG 与配置：`docs/rag-and-config.md`
-- 题材模板：`docs/genres.md`
-- 运维与恢复：`docs/operations.md`
-- 文档导航：`docs/README.md`
+- `webnovel-writer/`：Claude Plugin 运行时资源、Skills、Agents、模板、Python 数据链
+- `packages/*`：npm 包、CLI、适配器、Dashboard 后端
+
+## 仓库现在包含什么
+
+### 1) Claude Plugin / Python 写作链
+
+- 插件元数据：`.claude-plugin/marketplace.json`
+- 插件包元数据：`webnovel-writer/.claude-plugin/plugin.json`
+- Skills / Agents / 模板 / 参考资料：`webnovel-writer/`
+- Python 数据模块与 RAG 链路：`webnovel-writer/scripts/data_modules/`
+
+### 2) npm 包与 CLI
+
+- `@changw98ic/core`：核心类型、Schema、共享模型
+- `@changw98ic/data`：状态管理、实体索引、RAG 检索
+- `@changw98ic/adapters`：Claude Code / Cursor / OpenAI / OpenClaw 适配输出
+- `@changw98ic/dashboard`：Fastify Dashboard 后端
+- `@changw98ic/cli`：`webnovel` 命令行入口
+
+### 3) 当前已落地的平台适配
+
+- Claude Code
+- Cursor
+- OpenAI
+- OpenClaw
+
+> 这些适配入口来自 `packages/cli/src/index.ts` 的 `adapt` 命令和 `packages/adapters/src/index.ts` 的平台分发逻辑。
 
 ## 快速开始
 
-### 1) 安装插件（官方 Marketplace）
+### 方案 A：通过 Claude Plugin 使用
 
 ```bash
 claude plugin marketplace add changw98ic/webnovel-writer-skill --scope user
@@ -29,33 +50,80 @@ claude plugin install webnovel-writer@webnovel-writer-marketplace --scope user
 
 > 仅当前项目生效时，将 `--scope user` 改为 `--scope project`。
 
-### 2) 安装 Python 依赖
+安装 Python 依赖：
 
 ```bash
 python -m pip install -r https://raw.githubusercontent.com/changw98ic/webnovel-writer-skill/HEAD/requirements.txt
 ```
 
-说明：该入口会同时安装核心写作链路与 Dashboard 依赖。
-
-### 3) 初始化小说项目
-
-在 Claude Code 中执行：
+初始化项目后，在 Claude Code 中执行：
 
 ```bash
 /webnovel-init
+/webnovel-plan 1
+/webnovel-write 1
+/webnovel-review 1-5
 ```
 
-说明：`/webnovel-init` 会在当前 Workspace 下按书名创建 `PROJECT_ROOT`（子目录），并在 `workspace/.claude/.webnovel-current-project` 写入当前项目指针。
-
-### 4) 配置 RAG 环境（必做）
-
-进入初始化后的书项目根目录，创建 `.env`：
+### 方案 B：通过 npm CLI 使用
 
 ```bash
-cp .env.example .env
+npm install -g @changw98ic/cli
+
+webnovel --help
+webnovel init "我的小说"
+webnovel plan 1 --detailed
+webnovel write 1 --fast
+webnovel review 1-5 --detailed
+webnovel query 主角 --type entity
 ```
 
-最小配置示例：
+### 方案 C：按平台生成适配文件
+
+```bash
+webnovel adapt --platform claude-code --output ./skills
+webnovel adapt --platform cursor --output ./
+webnovel adapt --platform openai --output ./functions
+webnovel adapt --platform openclaw --output ./skills
+```
+
+说明：
+
+- `cursor` 会生成 `.cursorrules`
+- `openai` 会输出 `functions.json` 与 prompt 文件
+- `adapt` 当前使用 CLI 内置 `builtinSkills`，不是直接读取 `webnovel-writer/skills/*`
+
+## Cursor / Codex / OpenCode
+
+### Cursor
+
+Cursor 在当前仓库里有**明确的适配实现**：
+
+- CLI 入口：`packages/cli/src/index.ts`
+- 平台适配器：`packages/adapters/src/index.ts`
+- Cursor 生成器：`packages/adapters/src/cursor/generator.ts`
+
+推荐用法：
+
+```bash
+webnovel adapt --platform cursor --output ./
+```
+
+### Codex / OpenCode
+
+当前仓库里**没有找到专门命名为 `codex` 或 `opencode` 的 adapter target、模板目录或生成器文件**。
+
+如果你要在 Codex / OpenCode 这类代理终端中使用本仓库，当前更合适的入口是：
+
+- 直接安装并运行 `@changw98ic/cli`
+- 直接调用 `packages/*` 提供的 npm 包
+- 参考 `Cursor / OpenAI / Claude Code` 已有适配产物组织自己的终端工作流
+
+> 也就是说：**Cursor 适配是当前源码里明确存在的；Codex / OpenCode 目前更像“使用场景”，不是仓库里已有的专用适配目标。**
+
+## RAG 配置
+
+最小环境变量示例：
 
 ```bash
 EMBED_BASE_URL=https://api-inference.modelscope.cn/v1
@@ -67,107 +135,55 @@ RERANK_MODEL=jina-reranker-v3
 RERANK_API_KEY=your_rerank_api_key
 ```
 
-### 5) 开始使用
+补充说明：
+
+- npm 包侧的 `RAGAdapter` 默认读取 `process.env`
+- TypeScript 包当前未内置项目级 `.env` 自动加载
+- 插件版 `.env` 与 Python 数据链约定见 `docs/rag-and-config.md`
+
+## 目录结构
+
+```text
+.
+├── packages/
+│   ├── core/
+│   ├── data/
+│   ├── adapters/
+│   ├── cli/
+│   └── dashboard/
+├── webnovel-writer/
+│   ├── skills/
+│   ├── agents/
+│   ├── templates/
+│   ├── references/
+│   └── scripts/
+├── docs/
+└── .claude-plugin/
+```
+
+## 开发命令
 
 ```bash
-/webnovel-plan 1
-/webnovel-write 1
-/webnovel-review 1-5
+pnpm install
+pnpm build
+pnpm test
+pnpm lint
+pnpm cli --help
 ```
 
-如需排查本地 CLI / 插件目录 / 项目根解析问题，可直接运行统一预检：
+## 文档入口
 
-```bash
-python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<WORKSPACE_ROOT>" preflight
-```
-
-### 6) 启动可视化面板（可选）
-
-```bash
-/webnovel-dashboard
-```
-
-说明：
-- Dashboard 为只读面板（项目状态、实体图谱、章节/大纲浏览、追读力查看）。
-- 前端构建产物已随插件发布，使用者无需本地 `npm build`。
-
-### 7) Agent 模型设置（可选）
-
-本项目所有内置 Agent 默认配置为：
-
-```yaml
-model: inherit
-```
-
-表示子 Agent 继承当前 Claude 会话所用模型。
-
-如果要单独给某个 Agent 指定模型，编辑对应文件（`webnovel-writer/agents/*.md`）的 frontmatter，例如：
-
-```yaml
----
-name: context-agent
-description: ...
-tools: Read, Grep, Bash
-model: sonnet
----
-```
-
-常见可选值：`inherit` / `sonnet` / `opus` / `haiku`（以 Claude Code 当前支持为准）。
-
-## 更新简介
-
-| 版本 | 说明 |
-|------|------|
-| **v5.5.4 (当前)** | 补齐写作链提示词强约束（流程硬约束、中文思维写作约束、Step 职责边界）；统一中文化审查/润色/Agent 报告文案；清理文档内部版本号与版本历史，降低与插件发版版本混淆。 |
-| **v5.5.3** | 新增统一 `preflight` 预检命令；写作链 CLI 示例统一为 UTF-8 运行方式，收口文档中的长 shell 预检片段并降低 Windows 终端乱码风险。 |
-| **v5.5.2** | 支持将详细大纲中的章节名同步到正文文件名；修复 workflow_manager 在无参 find_project_root monkeypatch 下的兼容性问题。 |
-| **v5.5.1** | 修复卷级单文件大纲在上下文快照中的章节提取问题；补齐命令文档中遗漏的 `/webnovel-dashboard` 与 `/webnovel-learn`。 |
-| **v5.5.0** | 新增只读可视化 Dashboard Skill（`/webnovel-dashboard`）与实时刷新能力；支持插件目录启动与预构建前端分发 |
-| **v5.4.4** | 引入官方 Plugin Marketplace 安装机制；统一修复 Skills/Agents/References 的 CLI 调用（`CLAUDE_PLUGIN_ROOT` 单路径，透传命令统一 `--`） |
-| **v5.4.3** | 增强智能 RAG 上下文辅助（`auto/graph_hybrid` 回退 BM25） |
-| **v5.3** | 引入追读力系统（Hook / Cool-point / 微兑现 / 债务追踪） |
-
-## 插件发版
-
-推荐使用 GitHub Actions 的 `Plugin Release` 工作流统一发版：
-
-1. 先在本地同步版本信息：
-   ```bash
-   python -X utf8 webnovel-writer/scripts/sync_plugin_version.py --version 5.5.4 --release-notes "本次版本说明"
-   ```
-2. 提交并推送版本变更（`README.md`、`plugin.json`、`marketplace.json`）。
-3. 打开仓库的 Actions 页面，选择 `Plugin Release`。
-4. 输入与当前仓库元数据一致的 `version`（例如 `5.5.4`）和用于 GitHub Release 的 `release_notes`。
-5. 工作流会执行以下动作：
-   - 校验 `plugin.json`、`marketplace.json` 与 README 当前版本已经一致
-   - 校验当前版本与输入的 `version` 一致
-   - 创建并推送 `vX.Y.Z` Tag
-   - 创建同名 GitHub Release
-
-日常开发中，`Plugin Version Check` 会在 Push / PR 时自动校验版本信息是否一致。
+- `docs/README.md`：文档导航
+- `docs/architecture.md`：整体结构
+- `docs/commands.md`：命令详解
+- `docs/rag-and-config.md`：RAG 与配置
+- `packages/README.md`：npm 包总览
+- `packages/*/README.md`：各包单独说明
 
 ## 开源协议
-本项目使用 `GPL v3` 协议，详见 `LICENSE`。
 
-## Star 历史
-
-[![Star History Chart](https://api.star-history.com/svg?repos=changw98ic/webnovel-writer-skill&type=Date)](https://star-history.com/#changw98ic/webnovel-writer-skill&Date)
+本项目使用 `GPL-3.0-or-later`，详见 `LICENSE`。
 
 ## 致谢
 
-本项目基于 [lingfengQAQ/webnovel-writer-skill](https://github.com/lingfengQAQ/webnovel-writer-skill) 开发，感谢原作者的开源贡献。
-
-## 致谢
-
-本项目使用 **Claude Code + Gemini CLI + Codex** 配合 Vibe Coding 方式开发。  
-灵感来源：[Linux.do 帖子](https://linux.do/t/topic/1397944/49)
-
-## 贡献
-
-欢迎提交 Issue 和 PR：
-
-```bash
-git checkout -b feature/your-feature
-git commit -m "feat: add your feature"
-git push origin feature/your-feature
-```
+本项目基于 [lingfengQAQ/webnovel-writer-skill](https://github.com/lingfengQAQ/webnovel-writer-skill) 演进而来，当前仓库已补充 npm 包发布、CLI、Dashboard 与多平台适配链路。
