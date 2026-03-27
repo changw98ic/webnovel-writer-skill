@@ -1,12 +1,15 @@
 # Webnovel Writer
 
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-purple.svg)](https://claude.ai/claude-code)
-
-<a href="https://trendshift.io/repositories/22487" target="_blank"><img src="https://trendshift.io/api/badge/repositories/22487" alt="changw98ic%2Fwebnovel-writer-skill | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+[![Node.js](https://img.shields.io/badge/Node.js-18+-43853d.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178c6.svg)](https://www.typescriptlang.org/)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776ab.svg)](https://www.python.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-9-f69220.svg)](https://pnpm.io/)
+[![npm scope](https://img.shields.io/badge/npm-%40changw98ic%2F*-cb3837.svg)](https://www.npmjs.com/search?q=%40changw98ic)
 
 `Webnovel Writer` 现在是一个同时包含 **Claude Plugin 运行时** 与 **Node.js / TypeScript 工具链** 的 monorepo。
+
+适配场景：**Claude Plugin、npm CLI、Cursor、OpenAI、OpenClaw**；`Codex / OpenCode` 当前通过 CLI / npm 包接入。
 
 当前仓库有两条明确入口：
 
