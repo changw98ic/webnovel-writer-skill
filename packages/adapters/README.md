@@ -10,12 +10,28 @@ npm install @changw98ic/adapters
 
 ## 使用
 
+### 根入口（推荐）
+
 ```typescript
-import { ClaudeCodeAdapter } from '@changw98ic/adapters/claude-code';
-import { OpenAIAdapter } from '@changw98ic/adapters/openai';
-import { CursorAdapter } from '@changw98ic/adapters/cursor';
-import { OpenClawAdapter } from '@changw98ic/adapters/openclaw';
+import {
+  adapt,
+  generateClaudeSkill,
+  generateCursorRules,
+  generateOpenAIFunctions,
+  generateOpenClawSkill,
+} from '@changw98ic/adapters';
 ```
+
+### 子路径导入
+
+```typescript
+import { generateClaudeSkill } from '@changw98ic/adapters/claude-code';
+import { generateOpenAIFunctions } from '@changw98ic/adapters/openai';
+import { generateCursorRules } from '@changw98ic/adapters/cursor';
+import { generateOpenClawSkill } from '@changw98ic/adapters/openclaw';
+```
+
+> 提示：`@changw98ic/adapters/openclaw` 也导出了 `generateOpenClawSkills`。
 
 ## 文档
 
@@ -23,8 +39,8 @@ import { OpenClawAdapter } from '@changw98ic/adapters/openclaw';
 
 ## 致谢
 
-本项目基于 [lingfengQAQ/webnovel-writer-skill](https://github.com/lingfengQAQ/webnovel-writer-skill) 开发。
+本项目基于 [lingfengQAQ/webnovel-writer](https://github.com/lingfengQAQ/webnovel-writer) 开发。
 
 ## License
 
-MIT
+GPL-3.0-or-later

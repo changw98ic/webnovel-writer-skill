@@ -1,6 +1,6 @@
 {
   "name": "@changw98ic/adapters",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "平台适配器 - Claude Code / OpenAI / Cursor / OpenClaw",
   "type": "module",
   "main": "dist/index.js",
@@ -11,16 +11,16 @@
       "types": "./dist/index.d.ts"
     },
     "./claude-code": {
-      "import": "./dist/claude-code/index.js",
-      "types": "./dist/claude-code/index.d.ts"
+      "import": "./dist/claude-code/generator.js",
+      "types": "./dist/claude-code/generator.d.ts"
     },
     "./openai": {
-      "import": "./dist/openai/index.js",
-      "types": "./dist/openai/index.d.ts"
+      "import": "./dist/openai/generator.js",
+      "types": "./dist/openai/generator.d.ts"
     },
     "./cursor": {
-      "import": "./dist/cursor/index.js",
-      "types": "./dist/cursor/index.d.ts"
+      "import": "./dist/cursor/generator.js",
+      "types": "./dist/cursor/generator.d.ts"
     },
     "./openclaw": {
       "import": "./dist/openclaw/index.js",

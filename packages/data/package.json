@@ -1,6 +1,6 @@
 {
   "name": "@changw98ic/data",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "数据层 - 状态管理、实体索引、RAG 检索",
   "type": "module",
   "main": "dist/index.js",
@@ -11,16 +11,16 @@
       "types": "./dist/index.d.ts"
     },
     "./state": {
-      "import": "./dist/state/index.js",
-      "types": "./dist/state/index.d.ts"
+      "import": "./dist/state/manager.js",
+      "types": "./dist/state/manager.d.ts"
     },
-    "./index": {
-      "import": "./dist/index-manager/index.js",
-      "types": "./dist/index-manager/index.d.ts"
+    "./index-manager": {
+      "import": "./dist/index-manager/manager.js",
+      "types": "./dist/index-manager/manager.d.ts"
     },
     "./rag": {
-      "import": "./dist/rag/index.js",
-      "types": "./dist/rag/index.d.ts"
+      "import": "./dist/rag/adapter.js",
+      "types": "./dist/rag/adapter.d.ts"
     }
   },
   "files": [
